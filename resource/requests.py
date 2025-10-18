@@ -37,18 +37,21 @@ def get_available_currencies():
     return fetch_data_from_api(f"{BASE_URL}/currencies")
 
 
-def get_historical_rates(date: str, base: str = "EUR",
+def get_historical_rates(date: str,
+                         end_date: str = "",
+                         base: str = "EUR",
                          symbols: str | list[str] | None = None):
     """
     Fetch historical currency exchange rates for a specific date.
 
     Args:
         date (str): Date in YYYY-MM-DD format
+        end_date (str): Date in YYYY-MM-DD format
         base (str): Base currency (default: "EUR")
         symbols (str | list[str] | None): Target currencies (comma-separated or list)
     
     Returns:
-        dict: Historical exchange data for that date
+        dict: Historical exchange data for a date or period
     """
 
     params = [f"base={base.upper()}"]
@@ -56,6 +59,8 @@ def get_historical_rates(date: str, base: str = "EUR",
         if isinstance(symbols, list):
             symbols = ",".join(symbols)
         params.append(f"symbols={symbols.upper()}")
-
-    url = f"{BASE_URL}/{date}?{'&'.join(params)}"
+    if end_date:
+        url = f"{BASE_URL}/{date}..{end_date}?{'&'.join(params)}"
+    else:
+        url = f"{BASE_URL}/{date}?{'&'.join(params)}"
     return fetch_data_from_api(url)
