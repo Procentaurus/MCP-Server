@@ -1,0 +1,1 @@
+NAME = "currency-data-mcp"

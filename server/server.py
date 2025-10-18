@@ -1,21 +1,13 @@
-from mcp import Server
+from mcp.server.fastmcp import FastMCP as Server
 
-from tools.tools import (get_available_currencies_tool,
-                         get_latest_rates_tool,
-                         get_historical_rates_tool)
-from .manifest import (CAPABILITIES,
-                       NAME,
-                       VERSION)
-server = Server(
-    name=NAME,
-    version=VERSION,
-    capabilities=CAPABILITIES,
-)
+from apparatus.tools import register_tools
+from apparatus.prompts import register_prompts
+from .params import NAME
 
-# Register tools
-server.add_tool(get_available_currencies_tool)
-server.add_tool(get_latest_rates_tool)
-server.add_tool(get_historical_rates_tool)
+
+server = Server(name=NAME)
+register_tools(server)
+register_prompts(server)
 
 
 if __name__ == "__main__":
