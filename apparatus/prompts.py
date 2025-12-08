@@ -2,17 +2,16 @@ from mcp.server.fastmcp import FastMCP
 
 
 def register_prompts(server: FastMCP) -> None:
-
     @server.prompt(
         name="list_available_currencies",
         title="List Currencies",
-        description="Show all available currencies with their full names" \
-                    " and ISO codes."
+        description="Show all available currencies with their full names " \
+                    "and ISO codes."
     )
     def list_available_currencies_prompt() -> str:
         return "List all available currencies and their ISO codes " \
-                " in a clear format."
-    
+               " in a clear format."
+
     @server.prompt(
         name="fetch_latest_rates",
         title="Fetch Latest Rates",
@@ -22,9 +21,9 @@ def register_prompts(server: FastMCP) -> None:
                                   symbols: list[str] | None = None) -> str:
         if symbols:
             return f"Get the latest rates of the currency {base} for the " \
-                f"given currencies {', '.join(symbols)}."
+                   f"given currencies {', '.join(symbols)}."
         return f"Get the latest rates of the currency {base} vs " \
-            "all possible currencies."
+               "all possible currencies."
 
     @server.prompt(
         name="historical_currency_summary",
@@ -37,7 +36,11 @@ def register_prompts(server: FastMCP) -> None:
                                 base: str = "EUR",
                                 symbols: list[str] | None = None) -> str:
 
-        symbol_list = symbols if symbols else ["all currencies"]
+        if symbols:
+            symbol_str = ', '.join(symbols)
+        else:
+            symbol_str = "all currencies"
+
         if end_date == "":
             date_segment = f"on {date}"
         else:
@@ -45,5 +48,5 @@ def register_prompts(server: FastMCP) -> None:
 
         return (
             f"Give me information about rates for the currency {base} vs "
-            f"{', '.join(symbols)} {date_segment}."
+            f"{symbol_str} {date_segment}."
         )

@@ -1,0 +1,12 @@
+[project]
+name = "mcp-iui"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "google-genai>=1.54.0",
+    "httpx>=0.28.1",
+    "mcp[cli]>=1.23.2",
+    "python-dotenv>=1.2.1",
+]
