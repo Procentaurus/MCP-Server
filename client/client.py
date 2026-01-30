@@ -159,12 +159,36 @@ class MCPClient:
 
         return "\n".join(final_text)
 
+    async def use_prompt(self, prompt_name: str, arguments: Optional[Dict[str, Any]] = None):
+        try:
+            if arguments:
+                for key, value in arguments.items():
+                    if isinstance(value, list):
+                        arguments[key] = ",".join(map(str, value))
+                    else:
+                        arguments[key] = str(value)
+
+            result = await self.session.get_prompt(prompt_name, arguments)
+
+            if not result.messages:
+                return
+
+            prompt_text = "\n".join([m.content.text for m in result.messages if hasattr(m.content, 'text')])
+            print(f"\n--- Executing Prompt: {prompt_name} ---\n{prompt_text}")
+
+            response = await self.process_query(prompt_text)
+            print("\nResponse:\n" + response)
+
+        except Exception as e:
+            print(f"Error fetching prompt '{prompt_name}': {e}")
+
     async def chat_loop(self):
         print("\nMCP Client Started!")
         print("Type your queries\n"
               "'/prompts' to show available prompts\n"
               "'/clear' to clear chat history\n"
               "'/read' to read tool history\n"
+              "'/use' to create a prompt using a template\n"
               "'/exit' to exit.")
 
         while True:
@@ -207,6 +231,25 @@ class MCPClient:
                     else:
                         print(f"Unknown resource URI: {uri_to_read}")
                         print(f"Available default: {target_uri}")
+                    continue
+
+                if query.lower().startswith('/use'):
+                    parts = query.split(' ', 2)
+                    if len(parts) < 2:
+                        print("Usage: /use <prompt_name> [json_arguments]")
+                        continue
+
+                    p_name = parts[1]
+                    p_args = None
+
+                    if len(parts) > 2:
+                        try:
+                            p_args = json.loads(parts[2])
+                        except json.JSONDecodeError:
+                            print("Error: Arguments must be valid JSON.")
+                            continue
+
+                    await self.use_prompt(p_name, p_args)
                     continue
 
                 response = await self.process_query(query)

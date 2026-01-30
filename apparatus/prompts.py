@@ -1,3 +1,5 @@
+from typing import Any
+
 from mcp.server.fastmcp import FastMCP
 
 
@@ -18,7 +20,11 @@ def register_prompts(server: FastMCP) -> None:
         description="Retrieve the latest exchange rates vs selected currencies."
     )
     def fetch_latest_rates_prompt(base: str = "EUR",
-                                  symbols: list[str] | None = None) -> str:
+                                  symbols: Any = None) -> str:
+
+        if isinstance(symbols, str):
+            symbols = [s.strip() for s in symbols.split(",")]
+
         if symbols:
             return f"Get the latest rates of the currency {base} for the " \
                    f"given currencies {', '.join(symbols)}."
@@ -34,7 +40,10 @@ def register_prompts(server: FastMCP) -> None:
     def historical_rates_prompt(date: str,
                                 end_date: str = "",
                                 base: str = "EUR",
-                                symbols: list[str] | None = None) -> str:
+                                symbols: Any = None) -> str:
+
+        if isinstance(symbols, str):
+            symbols = [s.strip() for s in symbols.split(",")]
 
         if symbols:
             symbol_str = ', '.join(symbols)
